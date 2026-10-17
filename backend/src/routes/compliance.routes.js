@@ -1,0 +1,18 @@
+const express = require('express');
+const authenticate = require('../middleware/authenticate');
+const { authorize } = require('../middleware/authorize');
+const validate = require('../middleware/validate');
+const C = require('../controllers/compliance.controller');
+const { z } = require('zod');
+const router = express.Router();
+router.use(authenticate);
+router.get('/criteria', C.listCriteria);
+router.post('/criteria', authorize('DIRECTOR', 'PRINCIPAL', 'ADMIN'), validate(C.criterionSchema), C.createCriterion);
+router.get('/criteria/:id', C.getCriterion);
+router.patch('/criteria/:id', authorize('DIRECTOR', 'PRINCIPAL', 'ADMIN'), validate(C.criterionSchema.partial()), C.updateCriterion);
+router.get('/mappings', C.listMappings);
+router.post('/mappings', authorize('DIRECTOR', 'PRINCIPAL', 'HOD', 'COMMITTEE_HEAD', 'ADMIN'), validate(C.mappingSchema), C.createMapping);
+router.patch('/mappings/:id', authorize('DIRECTOR', 'PRINCIPAL', 'HOD', 'COMMITTEE_HEAD', 'ADMIN'), validate(z.object({ evidenceId: z.string().regex(/^[a-f\d]{24}$/i).nullable() }).strict()), C.updateMapping);
+router.post('/mappings/:id/review', authorize('DIRECTOR', 'PRINCIPAL', 'HOD', 'COMMITTEE_HEAD', 'ADMIN'), validate(z.object({ reviewStatus: z.enum(['ACCEPTED', 'REJECTED']), reviewComment: z.string().max(3000).optional() }).strict()), C.reviewMapping);
+router.get('/completeness', C.completeness);
+module.exports = router;

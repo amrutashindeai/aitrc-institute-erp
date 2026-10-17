@@ -1,0 +1,11 @@
+const express = require('express');
+const { login, me, changePassword, logout } = require('../controllers/auth.controller');
+const authenticate = require('../middleware/authenticate');
+const validate = require('../middleware/validate');
+const { loginSchema, changePasswordSchema } = require('../validators/auth.validators');
+const router = express.Router();
+router.post('/login', validate(loginSchema), login);
+router.get('/me', authenticate, me);
+router.post('/change-password', authenticate, validate(changePasswordSchema), changePassword);
+router.post('/logout', authenticate, logout);
+module.exports = router;

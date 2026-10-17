@@ -1,0 +1,16 @@
+import axios from 'axios';
+export const api=axios.create({baseURL:import.meta.env.VITE_API_BASE_URL||'http://localhost:5000/api/v1',timeout:20000,headers:{Accept:'application/json'}});
+api.interceptors.request.use(c=>{const t=localStorage.getItem('erp.accessToken');if(t)c.headers.Authorization=`Bearer ${t}`;return c;});
+api.interceptors.response.use(r=>r,e=>{if(e.response?.status===401&&!e.config?.url?.includes('/auth/login'))window.dispatchEvent(new Event('erp:unauthorized'));return Promise.reject(e);});
+export const unwrap=r=>r?.data?.data??r?.data;
+export const message=e=>{const x=e?.response?.data?.error;return x?.details?.map(d=>d.message).join(' ')||x?.message||e?.response?.data?.message||e?.message||'Something went wrong. Please try again.';};
+export const list=async(path,params={})=>{const r=await api.get(path,{params});return {data:unwrap(r),meta:r.data?.meta};};
+export const get=async(path)=>unwrap(await api.get(path));
+export const post=async(path,data)=>unwrap(await api.post(path,data));
+export const patch=async(path,data)=>unwrap(await api.patch(path,data));
+export const remove=async(path)=>unwrap(await api.delete(path));
+export const download=async(path,name)=>{const r=await api.get(path,{responseType:'blob'});const u=URL.createObjectURL(r.data);const a=document.createElement('a');a.href=u;a.download=name||'download';a.click();URL.revokeObjectURL(u);};
+export const idOf=v=>v&&typeof v==='object'?v.id||v._id:v;
+export const label=v=>v&&typeof v==='object'?v.name||v.title||v.email||v.code||'—':v||'—';
+export const dateLabel=(v,opts={dateStyle:'medium'})=>{if(!v)return '—';const d=new Date(v);return Number.isNaN(d.getTime())?'—':new Intl.DateTimeFormat(undefined,opts).format(d);};
+export const titleCase=v=>String(v||'').toLowerCase().replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());

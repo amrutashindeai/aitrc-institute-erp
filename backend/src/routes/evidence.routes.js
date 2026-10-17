@@ -1,0 +1,14 @@
+const express = require('express');
+const authenticate = require('../middleware/authenticate');
+const { authorize } = require('../middleware/authorize');
+const { singleEvidence } = require('../middleware/upload');
+const Evidence = require('../controllers/evidence.controller');
+const router = express.Router();
+router.use(authenticate);
+router.get('/', Evidence.list);
+router.post('/', singleEvidence, Evidence.uploadEvidence);
+router.get('/:id', Evidence.getById);
+router.get('/:id/download', Evidence.download);
+router.post('/:id/versions', singleEvidence, Evidence.uploadVersion);
+router.delete('/:id', authorize('DIRECTOR', 'PRINCIPAL', 'ADMIN', 'HOD', 'COMMITTEE_HEAD', 'FACULTY'), Evidence.archive);
+module.exports = router;

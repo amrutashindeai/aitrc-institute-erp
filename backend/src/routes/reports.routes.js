@@ -1,0 +1,13 @@
+const express = require('express');
+const authenticate = require('../middleware/authenticate');
+const R = require('../controllers/reports.controller');
+const router = express.Router();
+router.use(authenticate);
+router.get('/activities', R.activities);
+router.get('/departments', R.departments);
+router.get('/responsibilities', R.responsibilities);
+router.get('/overdue', R.overdue);
+router.get('/evidence-completeness', R.evidenceCompleteness);
+router.get('/compliance', R.compliance);
+router.get('/export.csv', R.exportCsv);
+module.exports = router;

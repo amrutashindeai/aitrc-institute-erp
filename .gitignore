@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Environment files: keep only safe templates
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# Build, test and coverage output
+**/dist/
+**/build/
+**/coverage/
+**/.nyc_output/
+
+# Runtime data and private evidence uploads
+backend/uploads/
+**/uploads/
+
+# Logs and local/editor/OS files
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Generated archives
+institute-erp.zip
